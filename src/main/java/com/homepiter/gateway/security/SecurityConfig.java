@@ -12,8 +12,10 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(auth -> auth.anyExchange().permitAll());
-
+                .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/public/**").permitAll()  // 예시: 공개 경로
+                        .anyExchange().authenticated()           // 나머지는 인증 필요
+                );
         return http.build();
     }
 }

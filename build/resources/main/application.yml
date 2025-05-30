@@ -2,8 +2,13 @@ server:
   port: 8080
 
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: gateway-service
+
+  config:
+    import: optional:dotenv:.env[.properties]  # .env 파일 지원 (선택)
 
   cloud:
     gateway:
@@ -64,6 +69,10 @@ spring:
           uri: lb://business-service
           predicates:
             - Path=/business/**
+
+#  redis:
+#    host: localhost
+#    port: 6379
 
 eureka:
   client:

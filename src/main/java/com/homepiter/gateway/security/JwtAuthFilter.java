@@ -1,6 +1,5 @@
 package com.homepiter.gateway.security;
 
-
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -16,7 +15,6 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -46,14 +44,13 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         }
 
         Claims claims = jwtTokenProvider.parseToken(token);
-        ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+        ServerHttpRequest modifiedRequest = request.mutate()
                 .header("X-User-Email", claims.getSubject())
-                .header("X-User-Role", claims.get("roles").toString()) // 역할(Role) 전달
+                .header("X-User-Role", claims.get("roles").toString())
                 .build();
 
         return chain.filter(exchange.mutate().request(modifiedRequest).build());
     }
 
     public static class Config {}
-
 }

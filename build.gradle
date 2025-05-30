@@ -1,49 +1,65 @@
 plugins {
+    id 'java'
     id 'org.springframework.boot' version '3.1.4'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'java'
 }
 
 group = 'com.homepiter'
 version = '1.0.0'
+sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    // ✅ WebFlux 기반 서버
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // ✅ Gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+
+    // ✅ Eureka Client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // ✅ Spring Security (WebFlux 포함)
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // ✅ CircuitBreaker (Resilience4j)
-    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
-
-    // JWT
+    // ✅ JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // Redis for RateLimiter
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    // ✅ Redis (필요 시 reactive 대체 가능)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    // .env 지원
+    // ✅ OAuth2 Client
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // ✅ Session 관리
+    implementation 'org.springframework.session:spring-session-core'
+
+    // ✅ Circuit Breaker
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+
+    // ✅ .env 지원
     implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 
-    // Lombok
+    // ✅ Jakarta 어노테이션 (PostConstruct 사용)
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+
+    // ✅ Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    // Servlet API (compile only)
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    // ✅ 개발 편의성
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    // Test
+    // ✅ 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
-
 
 dependencyManagement {
     imports {

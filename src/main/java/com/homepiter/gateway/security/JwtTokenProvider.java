@@ -2,45 +2,37 @@ package com.homepiter.gateway.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import java.security.Key;
-import java.util.Base64;
-import java.util.logging.Logger;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    private static final Logger logger = Logger.getLogger(JwtTokenProvider.class.getName());
+    private String secret = System.getenv("JWT_SECRET");
+    private long expiration = Long.parseLong(System.getenv("JWT_EXPIRATION")); // ms 단위
 
-    @Value("${jwt.secret}")         // 소문자 점(.) 표기
-    private String secretKeyBase64;
+    private Key key;
 
-    @Value("${jwt.expiration}")
-    private long validityInMilliseconds;
-
-    private Key secretKey;
-
-    @jakarta.annotation.PostConstruct
-    protected void init() {
-        byte[] keyBytes = Base64.getDecoder().decode(secretKeyBase64);
-        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (JwtException e) {
-            logger.warning("Invalid JWT: " + e.getMessage());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
         }
-        return false;
     }
 
     public Claims parseToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
