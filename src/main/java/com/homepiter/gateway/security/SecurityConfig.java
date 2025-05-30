@@ -13,8 +13,8 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/public/**").permitAll()  // 예시: 공개 경로
-                        .anyExchange().authenticated()           // 나머지는 인증 필요
+                        .pathMatchers("/public/**").permitAll()  // 공개 경로
+                        .anyExchange().authenticated()           // 인증 필요
                 );
         return http.build();
     }

@@ -16,4 +16,5 @@ public class FallbackController {
     public ResponseEntity<String> adminFallback() {
         return ResponseEntity.ok("Admin service is temporarily unavailable.");
     }
+
 }

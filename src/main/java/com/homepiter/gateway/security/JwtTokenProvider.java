@@ -12,7 +12,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private String secret = System.getenv("JWT_SECRET");
-    private long expiration = Long.parseLong(System.getenv("JWT_EXPIRATION")); // ms 단위
+    private long expiration = Long.parseLong(System.getenv("JWT_EXPIRATION"));
 
     private Key key;
 

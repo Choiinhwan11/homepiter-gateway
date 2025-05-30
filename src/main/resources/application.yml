@@ -8,7 +8,7 @@ spring:
     name: gateway-service
 
   config:
-    import: optional:dotenv:.env[.properties]  # .env 파일 지원 (선택)
+    import: optional:dotenv:.env[.properties]
 
   cloud:
     gateway:
@@ -49,6 +49,7 @@ spring:
               args:
                 name: userServiceFallback
                 fallbackUri: forward:/fallback/user
+            - name: LoggingFilter
 
         - id: admin-service
           uri: lb://admin-service
@@ -59,20 +60,21 @@ spring:
               args:
                 name: adminServiceFallback
                 fallbackUri: forward:/fallback/admin
+            - name: LoggingFilter
 
         - id: chat-service
           uri: lb://chat-service
           predicates:
             - Path=/api/chat/**
+          filters:
+            - name: LoggingFilter
 
         - id: business-service
           uri: lb://business-service
           predicates:
             - Path=/business/**
-
-#  redis:
-#    host: localhost
-#    port: 6379
+          filters:
+            - name: LoggingFilter
 
 eureka:
   client:
@@ -82,3 +84,10 @@ eureka:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG        # Gateway 전반 로그
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG  # 라우팅 오류 추적
+    com.homepiter.gateway.filter.LoggingFilter: DEBUG  # LoggingFilter 로그 레벨
