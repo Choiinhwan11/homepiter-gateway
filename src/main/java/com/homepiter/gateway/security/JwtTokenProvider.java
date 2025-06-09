@@ -1,38 +1,47 @@
-package com.homepiter.gateway.security;
+package com.homepiter.gateway.config.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
+import java.util.logging.Logger;
 
 @Component
 public class JwtTokenProvider {
 
-    private String secret = System.getenv("JWT_SECRET");
-    private long expiration = Long.parseLong(System.getenv("JWT_EXPIRATION"));
+    private static final Logger logger = Logger.getLogger(JwtTokenProvider.class.getName());
 
-    private Key key;
+    @Value("${jwt.secret}")
+    private String secretKeyBase64;
 
-    @PostConstruct
-    public void init() {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    @Value("${jwt.expiration}")
+    private long validityInMilliseconds;
+
+    private Key secretKey;
+
+    @jakarta.annotation.PostConstruct
+    protected void init() {
+        byte[] keyBytes = Base64.getDecoder().decode(secretKeyBase64);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
+        } catch (JwtException e) {
+            logger.warning("Invalid JWT: " + e.getMessage());
         }
+        return false;
     }
 
     public Claims parseToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

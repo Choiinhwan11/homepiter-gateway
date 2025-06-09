@@ -88,6 +88,6 @@ jwt:
 logging:
   level:
     root: INFO
-    org.springframework.cloud.gateway: DEBUG        # Gateway 전반 로그
-    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG  # 라우팅 오류 추적
-    com.homepiter.gateway.filter.LoggingFilter: DEBUG  # LoggingFilter 로그 레벨
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG
+    com.homepiter.gateway.filter.LoggingFilter: DEBUG

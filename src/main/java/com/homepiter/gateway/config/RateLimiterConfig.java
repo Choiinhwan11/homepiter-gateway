@@ -1,4 +1,4 @@
-package com.homepiter.gateway.config.gatway;
+package com.homepiter.gateway.config;
 
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,8 @@ public class RateLimiterConfig {
 
     @Bean
     public KeyResolver ipKeyResolver() {
-        return exchange ->
-                Mono.just(exchange.getRequest().getRemoteAddress().getAddress().getHostAddress());
+        return exchange -> Mono.just(
+                exchange.getRequest().getRemoteAddress().getAddress().getHostAddress()
+        );
     }
 }

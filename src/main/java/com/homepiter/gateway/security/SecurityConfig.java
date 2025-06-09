@@ -1,4 +1,4 @@
-package com.homepiter.gateway.security;
+package com.homepiter.gateway.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +12,8 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/public/**").permitAll()  // 공개 경로
-                        .anyExchange().authenticated()           // 인증 필요
-                );
+                .authorizeExchange(auth -> auth.anyExchange().permitAll());
+
         return http.build();
     }
 }
