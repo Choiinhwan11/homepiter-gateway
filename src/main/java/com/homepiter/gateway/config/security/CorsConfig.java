@@ -3,9 +3,8 @@ package com.homepiter.gateway.config.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,26 +13,17 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-
-        //  모든 오리진(출처) 허용
-        config.setAllowedOriginPatterns(List.of("*"));
-
-        //  HTTP 메서드 허용
+        config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용 (실제 운영 시 특정 도메인으로 제한 권장)
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        //  모든 헤더 허용
-        config.setAllowedHeaders(Arrays.asList("*"));
-
-        //  응답 헤더 허용 (Authorization 헤더 포함)
+        config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true); // 자격 증명 포함 허용 (ex: 쿠키)
 
-        //  인증 정보를 포함한 요청 허용 (ex: 쿠키 사용 가능)
-        config.setAllowCredentials(true);
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+
+        return new CorsWebFilter(source);
     }
 }

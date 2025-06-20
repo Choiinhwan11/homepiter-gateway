@@ -2,6 +2,15 @@ server:
   port: 8080
 
 spring:
+  redis:
+    host: localhost
+    port: 6379
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+
   cloud:
     gateway:
       globalcors:
@@ -39,3 +48,7 @@ spring:
           uri: lb://business-service
           predicates:
             - Path=/business/**
+
+jwt:
+  secret: dGhpc2lzYWZhaXJseXNlY3VyZTI1NnNlY3JldGtleWFzYmFzZTY0
+  expiration: 3600000

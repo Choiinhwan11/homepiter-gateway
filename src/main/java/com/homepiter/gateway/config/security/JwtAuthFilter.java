@@ -1,5 +1,6 @@
-package com.homepiter.gateway.config.security;
+package com.homepiter.gateway.security;
 
+import com.homepiter.gateway.config.security.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -19,38 +20,50 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    // 필터 로직 구현
     @Override
     public GatewayFilter apply(Config config) {
         return this::filter;
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
-        ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(httpStatus);
-        return response.setComplete();
-    }
-
     private Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
 
+        // Authorization 헤더 없으면 거절
         if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
             return onError(exchange, "Missing Authorization Header", HttpStatus.UNAUTHORIZED);
         }
 
-        String token = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+        String token = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (token == null || !token.startsWith("Bearer ")) {
+            return onError(exchange, "Invalid Authorization Header", HttpStatus.UNAUTHORIZED);
+        }
+
+        token = token.replace("Bearer ", "");
 
         if (!jwtTokenProvider.validateToken(token)) {
             return onError(exchange, "Invalid JWT Token", HttpStatus.UNAUTHORIZED);
         }
 
+        // 클레임 파싱
         Claims claims = jwtTokenProvider.parseToken(token);
-        ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+
+        // 사용자 정보 헤더에 추가
+        ServerHttpRequest modifiedRequest = request.mutate()
                 .header("X-User-Email", claims.getSubject())
-                .header("X-User-Role", claims.get("roles").toString()) // 역할(Role) 전달
+                .header("X-User-Role", claims.get("roles").toString())
                 .build();
 
         return chain.filter(exchange.mutate().request(modifiedRequest).build());
     }
 
+    // 오류 응답
+    private Mono<Void> onError(ServerWebExchange exchange, String errMsg, HttpStatus status) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(status);
+        return response.setComplete();
+    }
+
+    // 설정용 내부 클래스
     public static class Config {}
 }
