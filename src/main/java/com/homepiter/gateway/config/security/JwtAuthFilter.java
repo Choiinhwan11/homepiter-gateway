@@ -1,6 +1,6 @@
 package com.homepiter.gateway.config.security;
 
-
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -15,7 +15,6 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
 
     private final JwtTokenProvider jwtTokenProvider;

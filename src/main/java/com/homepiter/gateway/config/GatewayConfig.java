@@ -1,6 +1,6 @@
 package com.homepiter.gateway.config;
 
-import com.homepiter.gateway.security.JwtAuthFilter;
+import com.homepiter.gateway.config.security.JwtAuthFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
